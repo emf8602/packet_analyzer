@@ -1,8 +1,18 @@
 # packet_analyzer
 In this assignment you will write a network packet analyzer called pktsniffer that reads packets and produces a detailed summary of those packets. The pktsniffer program first reads packets from a specified file (pcap file). Then it extracts and displays the different headers of the captured packets.
 
+### What to Display
+**Ethernet Header**: Packet size, Destination MAC address, Source MAC address, Ethertype  
+**IP Header**: Version, Header length, Type of service, Total length, Identification, Flags, Fragment offset, Time to live, Protocol, Header checksum, Source and Destination IP addresses.  
+**Encapsulated Packets**: TCP, UDP, or ICMP headers.
 
-# Pep 8 Guidelines
+# How to Run and Execute Code
+This is how to run and execute the code
+
+# Command Line Usage
+How to use the program on the commandline and the different flags
+
+# Pep 8 Guidelines Used
 This section is here to ensure I stay on top of keeping my code in Pep 8 style  
 https://peps.python.org/pep-0008/   
 
