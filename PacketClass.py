@@ -13,6 +13,7 @@ class PacketClass:
     self.ether_layer = None
     self.ip_layer = None
     self.tcp_layer = None
+    self.udp_layer = None
     self.icmp_layer = None
     
     if packet.haslayer("Ether"):
@@ -110,7 +111,30 @@ class PacketClass:
         bool: True if packet is valid, false if not
     """
     if packet_filter:
-        print(filter_info)
+      if packet_filter == "host":
+        print("host filter")
+      elif packet_filter == "port":
+        filter_info = int(filter_info)
+        if self.tcp_layer:
+          if filter_info != self.tcp_layer.sport and filter_info != self.tcp_layer.dport:
+            return False
+        elif self.udp_layer:
+          if filter_info != self.udp_layer.sport and filter_info != self.udp_layer.dport:
+            return False
+        else:
+          return False
+      elif packet_filter == "ip":
+        if not self.ip_layer:
+          return False
+      elif packet_filter == "tcp":
+        if not self.tcp_layer:
+          return False
+      elif packet_filter == "udp":
+        if not self.udp_layer:
+          return False
+      elif packet_filter == "icmp":
+        if not self.icmp_layer:
+          return False
     if net:
         if net != self.packet.ip_layer.src and net != self.packet.ip_layer.dst:
             return False
