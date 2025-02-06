@@ -1,5 +1,6 @@
-from scapy.all import rdpcap
 import argparse
+
+from scapy.all import rdpcap
 from PacketClass import PacketClass
 
 
