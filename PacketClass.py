@@ -1,3 +1,5 @@
+import re
+
 from helper_functions import ProtocolNumber, flag_parse
 
 
@@ -136,8 +138,18 @@ class PacketClass:
       if not self.icmp_layer:
         return False
     if net is not None:
-        if net != self.packet.ip_layer.src and net != self.packet.ip_layer.dst:
+      net_split = re.split('\.|:', net)
+      if net_split[-1] == '0':
+        #This is not an exact match
+        src_split = re.split('\.|:', self.ip_layer.src)
+        dst_split = re.split('\.|:', self.ip_layer.dst)
+
+        for count, split in enumerate(net_split[:-1]):
+          if split != src_split[count] and split != dst_split[count]:
             return False
+      else:
+        if net != self.ip_layer.src and net != self.ip_layer.dst:
+          return False
     return True
   
   def print_layers(self):
