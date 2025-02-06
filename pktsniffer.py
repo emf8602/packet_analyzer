@@ -51,11 +51,27 @@ def parse_args():
     parser.add_argument(
         "-port", "--port",
         type=str, help="Filter packet by source port")
+    
     parser.add_argument(
-        "--bool_filter", nargs="*", 
-        choices=["ip", "tcp", "udp", "icmp"], 
-        help="Boolean filters to apply on packets"
-        )
+        "-ip", 
+        action = "store_true", 
+        help="Filter by ipv4"
+    )
+    parser.add_argument(
+        "-tcp", 
+        action = "store_true", 
+        help="Filter by tcp"
+    )
+    parser.add_argument(
+        "-udp", 
+        action = "store_true", 
+        help="Filter by udp"
+    )
+    parser.add_argument(
+        "-icmp", 
+        action = "store_true", 
+        help="Filter by icmp"
+    )
     parser.add_argument(
         "-c", "--count",
         type=int, help="Number of packets to capture"
@@ -72,14 +88,21 @@ def main():
     pcap_file: str = args.file
     host: str = args.host
     port: str = args.port
-    bool_filter: str = args.bool_filter
     net: str = args.net
     packet_count: int = args.count
+    ip_flag: bool = args.ip
+    tcp_flag: bool = args.tcp
+    udp_flag: bool = args.udp
+    icmp_flag: bool = args.icmp
+    
         
     packets = read_pcap(pcap_file, packet_count)
     filtered_packets = [
         packet for packet in packets 
-        if packet.valid_packet(host, port, bool_filter, net)
+        if packet.valid_packet(
+            host, port, net, ip_flag, 
+            tcp_flag, udp_flag, icmp_flag
+            )
         ]
     for filtered_packet in filtered_packets:
         filtered_packet.print_layers()

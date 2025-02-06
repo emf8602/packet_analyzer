@@ -32,8 +32,8 @@ class PacketClass:
           self.tcp_layer = packet["TCP"]
         elif packet.haslayer("UDP"):
           self.udp_layer = packet["UDP"]
-        elif packet.haslayer("ICMP"):
-          self.icmp_layer = packet["ICMP"]
+        elif packet.haslayer("ICMPv6ND_RA"):
+          self.icmp_layer = packet["ICMPv6ND_RA"]          
 
   def parse_ethernet_layer(self):
     """Print out the ethernet layer if it exists."""
@@ -93,19 +93,25 @@ class PacketClass:
   def parse_icmp_layer(self):
     """Print out ICMP layer if it exists."""
     if self.icmp_layer:
-      print("\nICMP Layer")
+      print("\nICMPv6 Layer")
       print(f"Type: {self.icmp_layer.type}")
       print(f"Code: {self.icmp_layer.code}")
-      print(f"Checksum: {hex(self.icmp_layer.chksum)}")
+      print(f"Checksum: {hex(self.icmp_layer.cksum)}")
     
-  def valid_packet(self, host, port, bool_filter, net):
+  def valid_packet(
+    self, host, port, net, 
+    ip_flag, tcp_flag, udp_flag, icmp_flag
+    ):
     """Checks if the given packet is valid to be printed out
     Args:
         host (str): Optional flag to filter packets based on host.
         port (str): Optional flag to filter packets based on port.
-        bool_filter (list): Optional list of boolean filters
-          Can contain "ip", "tcp", "udp", and or "icmp"
         net (str): Optional flag for source or destination IP.
+        ip_flag (bool): True if you need to filter based on ip
+        tcp_flag (bool): True if you need to filter based on tcp
+        udp_flag (bool): True if you need to filter based on udp
+        icmp_flag (bool): True if you need to filter based on icmp
+        
     Returns:
         bool: True if packet is valid, false if it is not.
     """
@@ -125,31 +131,34 @@ class PacketClass:
           return False
       else:
         return False
-    if bool_filter is not None and "ip" in bool_filter:
+    if ip_flag:
       if not self.ip_layer or self.ip_layer.version != 4:
         return False
-    if bool_filter is not None and "tcp" in bool_filter:
+    if tcp_flag:
       if not self.tcp_layer:
         return False
-    elif bool_filter is not None and "udp" in bool_filter:
+    elif udp_flag:
       if not self.udp_layer:
         return False
-    elif bool_filter is not None and "icmp" in bool_filter:
+    elif icmp_flag:
       if not self.icmp_layer:
         return False
     if net is not None:
-      net_split = re.split('\.|:', net)
-      if net_split[-1] == '0':
-        #This is not an exact match
-        src_split = re.split('\.|:', self.ip_layer.src)
-        dst_split = re.split('\.|:', self.ip_layer.dst)
+      if self.ip_layer is not None:
+        net_split = re.split('\.|:', net)
+        if net_split[-1] == '0':
+          #This is not an exact match
+          src_split = re.split('\.|:', self.ip_layer.src)
+          dst_split = re.split('\.|:', self.ip_layer.dst)
 
-        for count, split in enumerate(net_split[:-1]):
-          if split != src_split[count] and split != dst_split[count]:
+          for count, split in enumerate(net_split[:-1]):
+            if split != src_split[count] and split != dst_split[count]:
+              return False
+        else:
+          if net != self.ip_layer.src and net != self.ip_layer.dst:
             return False
       else:
-        if net != self.ip_layer.src and net != self.ip_layer.dst:
-          return False
+        return False
     return True
   
   def print_layers(self):

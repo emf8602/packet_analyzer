@@ -19,7 +19,7 @@ How to use the program with flags on the commandline
 
 While in the repository containing `pktsniffer.py` run:
 ```cmd
-python pktsniffer.py -r FILE [-host HOST] [-port PORT] [{ip,tcp,udp,icmp}] [-c COUNT] [-net NET]
+python pktsniffer.py -r FILE [-host HOST] [-port PORT] [-ip] [-tcp] [-udp] [-icmp] [-c COUNT] [-net NET]
 ```
 **Filter Arguments:**   
 host *hostnameaddr*: True if either the IPv4/v6 source or destination of the packet is hostnameaddr.  
@@ -33,14 +33,17 @@ net *netnameaddr*: True if either the IPv4/v6 source or destination address of t
 count *numbercount*: The number of packets to be analyzed
 
 ## Examples:
-    pktsniffer -r test.pcap host 192.168.0.1  
-Runs the pktsniffer program on the 'test.pcap' file and only showing packets where the source or destination has a host of 192.168.0.1
+    python .\pktsniffer.py -r test.pcap -host 239.255.255.250  
+Runs the pktsniffer program on the 'test.pcap' file and only showing packets where the source or destination has a host of 239.255.255.250  
 
-    pktsniffer -r test.pcap -c 5  
+    python .\pktsniffer.py -r test.pcap -c 5  
 Runs the pktsniffer program on the 'test.pcap' file and only showing the first 5 packets in the file
 
-    pktsniffer -r test.pcap -port 80  
-Runs the pktsniffer program on the 'test.pcap' file and only showing the packets where the source or destination port = 80
+    python .\pktsniffer.py -r test.pcap -port 53120  
+Runs the pktsniffer program on the 'test.pcap' file and only showing the packets where the source or destination port = 53120
 
-    pktsniffer -r test.pcap udp -c 5
+    python .\pktsniffer.py -r test.pcap -udp -c 5
 Runs the pktsniffer program on the 'test.pcap' file only reading the first 5 packets and only displaying them if they use udp 
+
+    python .\pktsniffer.py -r test.pcap -net 3.0
+Runs the pktsniffer program on the 'test.pcap' file only showing the packets with a source or destination address of 3.xxx.xxx.xxx
